@@ -1,7 +1,8 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue';
 import AOS from 'aos';
-import ReviewsComponent from '@/components/ReviewsComponent.vue';
+// import ReviewsComponent from '@/components/ReviewsComponent.vue';
+import ReviewsComponent from '../components/ReviewsComponent.vue';
 
 /** * РІВЕНЬ 2 & 3: Функція для динамічного імпорту зображень із assets/img.
  * Vite потребує використання URL для активів, які не лежать у папці public.
