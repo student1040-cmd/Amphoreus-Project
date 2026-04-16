@@ -1,13 +1,13 @@
 <script>
-import api from '@/api/client'; // Імпорт налаштованого axios-клієнта
+import api from '@/api/client'; 
 
 export default {
   data() {
     return {
-      feedbacks: [],     // Список відгуків з нової БД
-      name: '',          // Поле форми: Ім'я
-      review: '',        // Поле форми: Відгук
-      errorMessage: '',  // Повідомлення про помилки
+      feedbacks: [],     
+      name: '',          
+      review: '',        
+      errorMessage: '',  
     };
   },
   methods: {
@@ -15,11 +15,10 @@ export default {
     async loadFeedbacks() {
       this.errorMessage = '';
       try {
-        // Звертаємося до нового ендпоінту для відгуків
         const { data } = await api.get('/api/reviews');
         this.feedbacks = Array.isArray(data) ? data : [];
       } catch (e) {
-        this.errorMessage = 'Не вдалося завантажити відгуки з сервера.';
+        this.errorMessage = 'Не вдалося завантажити відгуки.';
         console.error(e);
       }
     },
@@ -30,46 +29,41 @@ export default {
       
       this.errorMessage = '';
       try {
-        // Формуємо об'єкт згідно з колонками в DBeaver: user_name та comment
         const payload = {
           user_name: this.name.trim(),
           comment: this.review.trim()
         };
 
-        // Відправляємо запит на новий ендпоінт
         await api.post('/api/reviews', payload);
-        
-        // Очищуємо поля форми після успіху
         this.name = '';
         this.review = '';
         
-        // Оновлюємо список, щоб побачити новий відгук
         await this.loadFeedbacks(); 
       } catch (e) {
-        this.errorMessage = 'Помилка при збереженні. Сервер не відповідає.';
-        console.error("Деталі помилки:", e);
+        this.errorMessage = 'Помилка при збереженні.';
+        console.error(e);
+      }
+    },
+
+    // ПРАВИЛЬНЕ ВИДАЛЕННЯ (Всередині методів)
+    async deleteReview(id) {
+      if (confirm('Ви впевнені, що хочете видалити цей відгук?')) {
+        try {
+          await api.delete(`/api/reviews/${id}`);
+          
+          // Оновлюємо масив feedbacks
+          this.feedbacks = this.feedbacks.filter(item => item.id !== id);
+          
+          alert('Відгук видалено');
+        } catch (error) {
+          console.error("Помилка видалення:", error);
+          alert('Не вдалося видалити. Можливо, на сервері немає такого ID.');
+        }
       }
     }
   },
   mounted() {
     this.loadFeedbacks();
-  }
-};
-const deleteReview = async (id) => {
-  if (confirm('Ви впевнені, що хочете видалити цей відгук?')) {
-    try {
-      // Використовуємо твій axios клієнт (api) для запиту на бекенд
-      await api.delete(`/api/reviews/${id}`);
-      
-      // Після видалення на сервері, видаляємо відгук зі списку на екрані
-      // Припускаємо, що твій масив з відгуками називається 'reviews'
-      reviews.value = reviews.value.filter(review => review.id !== id);
-      
-      alert('Відгук видалено');
-    } catch (error) {
-      console.error("Помилка видалення:", error);
-      alert('Не вдалося видалити відгук');
-    }
   }
 };
 </script>
