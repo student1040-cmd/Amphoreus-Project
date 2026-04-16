@@ -1,0 +1,133 @@
+<script>
+import api from '@/api/client'; // Імпорт налаштованого axios-клієнта
+
+export default {
+  data() {
+    return {
+      feedbacks: [],     // Список відгуків з нової БД
+      name: '',          // Поле форми: Ім'я
+      review: '',        // Поле форми: Відгук
+      errorMessage: '',  // Повідомлення про помилки
+    };
+  },
+  methods: {
+    // Отримання відгуків (GET)
+    async loadFeedbacks() {
+      this.errorMessage = '';
+      try {
+        // Звертаємося до нового ендпоінту для відгуків
+        const { data } = await api.get('/api/reviews');
+        this.feedbacks = Array.isArray(data) ? data : [];
+      } catch (e) {
+        this.errorMessage = 'Не вдалося завантажити відгуки з сервера.';
+        console.error(e);
+      }
+    },
+
+    // Додавання відгуку (POST)
+    async submitFeedback() {
+      if (!this.name.trim() || !this.review.trim()) return;
+      
+      this.errorMessage = '';
+      try {
+        // Формуємо об'єкт згідно з колонками в DBeaver: user_name та comment
+        const payload = {
+          user_name: this.name.trim(),
+          comment: this.review.trim()
+        };
+
+        // Відправляємо запит на новий ендпоінт
+        await api.post('/api/reviews', payload);
+        
+        // Очищуємо поля форми після успіху
+        this.name = '';
+        this.review = '';
+        
+        // Оновлюємо список, щоб побачити новий відгук
+        await this.loadFeedbacks(); 
+      } catch (e) {
+        this.errorMessage = 'Помилка при збереженні. Сервер не відповідає.';
+        console.error("Деталі помилки:", e);
+      }
+    }
+  },
+  mounted() {
+    this.loadFeedbacks();
+  }
+};
+</script>
+
+<template>
+  <section class="container my-5 text-white" id="reviews" data-aos="fade-up">
+    <div class="row">
+      <div class="col-md-6">
+        <h2 class="section-title">Залишити відгук</h2>
+        <form @submit.prevent="submitFeedback" class="bg-dark p-4 rounded border border-gold shadow">
+          <div class="mb-3">
+            <label class="form-label text-warning">Ваше ім'я</label>
+            <input v-model="name" type="text" class="form-control" placeholder="Як вас звати?" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-warning">Ваше послання</label>
+            <textarea v-model="review" class="form-control" rows="4" placeholder="Напишіть ваші враження від подорожі" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-outline-warning w-100 mt-2">
+            Надіслати відгук
+          </button>
+        </form>
+      </div>
+
+      <div class="col-md-6">
+        <h2 class="section-title">Відгуки мандрівників</h2>
+        <p v-if="errorMessage" class="text-danger small">{{ errorMessage }}</p>
+        
+        <div v-if="feedbacks.length === 0" class="text-muted italic">
+          Відгуків поки немає. Будьте першим!
+        </div>
+
+        <div class="reviews-list mt-3" style="max-height: 450px; overflow-y: auto;">
+          <article v-for="item in feedbacks" :key="item.id" class="bg-dark p-3 mb-3 border-start border-warning border-3 rounded shadow-sm">
+            <h5 class="text-warning mb-1">{{ item.user_name }}</h5>
+            <p class="mb-0 text-light opacity-75">{{ item.comment }}</p>
+            <small class="text-muted d-block mt-2" style="font-size: 0.7rem;">
+              {{ new Date(item.created_at).toLocaleString() }}
+            </small>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+</template>
+
+<style scoped>
+.border-gold {
+  border: 1px solid #D2BD6B !important;
+}
+.section-title {
+  border-bottom: 2px solid #D2BD6B;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.form-control {
+  background-color: #1a1a1a;
+  border: 1px solid #444;
+  color: white;
+}
+.form-control:focus {
+  background-color: #222;
+  border-color: #D2BD6B;
+  color: white;
+  box-shadow: 0 0 5px rgba(210, 189, 107, 0.5);
+}
+/* Стиль для скролбару */
+.reviews-list::-webkit-scrollbar {
+  width: 5px;
+}
+.reviews-list::-webkit-scrollbar-thumb {
+  background: #D2BD6B;
+  border-radius: 10px;
+}
+</style>
