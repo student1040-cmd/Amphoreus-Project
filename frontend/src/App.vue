@@ -7,6 +7,29 @@ import { RouterView } from 'vue-router';
 </template>
 
 <style>
+/* Стилі для телефонів (екран менше 768px) */
+@media (max-width: 768px) {
+  .container {
+    width: 95%; /* Не даємо контенту липнути до країв */
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 24px; /* Зменшуємо заголовки */
+  }
+
+  /* Якщо у тебе були блоки в ряд (flex-direction: row), 
+     робимо їх один під одним */
+  .flex-container {
+    flex-direction: column;
+  }
+
+  /* Робимо картинки такими, щоб не вилазили за екран */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
 :root {
     --gold: #D2BD6B;
     --dark-blue: #07091F;
