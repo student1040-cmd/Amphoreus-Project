@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: laba-1-backend
+    runtime: docker
+    rootDir: backend
+    plan: free
+
+  - type: web
+    name: laba-2-frontend
+    runtime: docker
+    rootDir: frontend
+    plan: free
