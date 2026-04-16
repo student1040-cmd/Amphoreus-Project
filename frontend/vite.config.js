@@ -6,8 +6,7 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
-    // Замість списку доменів дозволяємо всі хости. 
-    // Для навчального проекту на Render це найнадійніший варіант.
-    allowedHosts: true 
+    strictPort: true,
+    allowedHosts: true // Дозволяє всі хости, щоб не було Blocked host
   }
 })

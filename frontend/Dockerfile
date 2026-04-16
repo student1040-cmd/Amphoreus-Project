@@ -1,6 +1,10 @@
 FROM node:20-slim
 WORKDIR /app
 COPY package*.json ./
+# Встановлюємо залежності та примусово додаємо плагін
 RUN npm install --legacy-peer-deps
+RUN npm install @vitejs/plugin-react --save-dev
+
 COPY . .
-CMD ["npx", "vite", "--host", "0.0.0.0"]
+EXPOSE 5173
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
