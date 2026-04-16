@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Створення екземпляру axios з базовим URL вашого бекенду
 const api = axios.create({
-  baseURL: 'http://localhost:3000', // Адреса вашої Express.js частини
+  baseURL: 'https://laba-1-backend.onrender.com', // Адреса вашої Express.js частини
 });
 
 // Перехоплювач для логування помилок (Рівень 3: коментар)
