@@ -55,6 +55,23 @@ export default {
     this.loadFeedbacks();
   }
 };
+const deleteReview = async (id) => {
+  if (confirm('Ви впевнені, що хочете видалити цей відгук?')) {
+    try {
+      // Використовуємо твій axios клієнт (api) для запиту на бекенд
+      await api.delete(`/api/reviews/${id}`);
+      
+      // Після видалення на сервері, видаляємо відгук зі списку на екрані
+      // Припускаємо, що твій масив з відгуками називається 'reviews'
+      reviews.value = reviews.value.filter(review => review.id !== id);
+      
+      alert('Відгук видалено');
+    } catch (error) {
+      console.error("Помилка видалення:", error);
+      alert('Не вдалося видалити відгук');
+    }
+  }
+};
 </script>
 
 <template>
@@ -89,9 +106,20 @@ export default {
           <article v-for="item in feedbacks" :key="item.id" class="bg-dark p-3 mb-3 border-start border-warning border-3 rounded shadow-sm">
             <h5 class="text-warning mb-1">{{ item.user_name }}</h5>
             <p class="mb-0 text-light opacity-75">{{ item.comment }}</p>
-            <small class="text-muted d-block mt-2" style="font-size: 0.7rem;">
-              {{ new Date(item.created_at).toLocaleString() }}
-            </small>
+            
+            <div class="d-flex justify-content-between align-items-center mt-2">
+              <small class="text-muted" style="font-size: 0.7rem;">
+                {{ new Date(item.created_at).toLocaleString() }}
+              </small>
+
+              <button 
+                @click="deleteReview(item.id)" 
+                class="btn btn-sm btn-outline-danger" 
+                style="font-size: 0.65rem; padding: 2px 8px; text-transform: uppercase; letter-spacing: 0.5px;"
+              >
+                Видалити
+              </button>
+            </div>
           </article>
         </div>
       </div>

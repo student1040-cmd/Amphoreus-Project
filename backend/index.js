@@ -55,7 +55,13 @@ app.post('/api/reviews', (req, res) => {
         });
     });
 });
-
+app.delete('/api/reviews/:id', (req, res) => {
+    const { id } = req.params;
+    db.run("DELETE FROM reviews WHERE id = ?", id, function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: "Видалено" });
+    });
+});
 // Запуск сервера на порту від Render
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Сервер працює на порту ${PORT}`);
