@@ -1,8 +1,19 @@
-FROM node:20-slim
+FROM node:20-bookworm
 WORKDIR /app
-# Встановлюємо залежності для sqlite3
+
+# Встановлюємо необхідні інструменти для компіляції
 RUN apt-get update && apt-get install -y python3 make g++ gcc
+
 COPY package*.json ./
-RUN npm install --legacy-peer-deps && npm rebuild sqlite3
+
+# Видаляємо старе та ставимо нове
+RUN rm -rf node_modules
+RUN npm install --legacy-peer-deps
+RUN npm rebuild sqlite3
+
 COPY . .
+
+ENV PORT=3000
+EXPOSE 3000
+
 CMD ["node", "index.js"]
